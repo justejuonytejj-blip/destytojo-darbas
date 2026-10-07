@@ -130,7 +130,7 @@
   font-size: 16px;
   font-weight: 500;
   color: #fff;
-  background: var(--accent);
+  background: #3b82f6;
   border: none;
   border-radius: 10px;
   cursor: pointer;
@@ -148,7 +148,7 @@
 }
 
 .login-submit:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid #3b82f6;
   outline-offset: 3px;
 }
 
