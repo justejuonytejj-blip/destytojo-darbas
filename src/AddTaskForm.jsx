@@ -6,23 +6,40 @@ function AddTaskForm({ onAddTask }) {
   const [title, setTitle] = useState("");
   const [deadline, setDeadline] = useState("");
   const [status, setStatus] = useState("Nepradėta");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState("");
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
+    setIsSubmitting(true);
+    setMessage("");
 
-    const newTask = {
-      id: Date.now(),
-      title,
-      status,
-      deadline,
-    };
+    try {
+      const response = await fetch(
+        "https://testapi.io/api/justejuonytejj-blip/resource/tasklist",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, status, deadline }),
+        },
+      );
 
-    onAddTask(newTask);
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || `HTTP ${response.status}`);
+      }
 
-    setTitle("");
-    setDeadline("");
-    setStatus("Nepradėta");
-    setIsOpen(false);
+      onAddTask({ ...result, title, status, deadline });
+      setMessage("Užduotis sėkmingai išsaugota.");
+      setTitle("");
+      setDeadline("");
+      setStatus("Nepradėta");
+      setIsOpen(false);
+    } catch (error) {
+      setMessage(`Užduoties išsaugoti nepavyko: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   function handleCancel() {
@@ -111,12 +128,21 @@ function AddTaskForm({ onAddTask }) {
               Atšaukti
             </button>
 
-            <button type="submit" className="add-task__submit">
-              Pridėti užduotį
+            <button
+              type="submit"
+              className="add-task__submit"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Saugoma..." : "Pridėti užduotį"}
             </button>
           </div>
         </form>
       </div>
+      {message && (
+        <p className="add-task__message" role="status">
+          {message}
+        </p>
+      )}
     </div>
   );
 }
