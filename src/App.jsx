@@ -23,6 +23,7 @@ function App() {
   const [tasks, setTasks] = useState([]);
   const [isLoadingTasks, setIsLoadingTasks] = useState(true);
   const [tasksError, setTasksError] = useState("");
+  const [taskUpdateErrors, setTaskUpdateErrors] = useState({});
 
   async function loadTasks() {
     setIsLoadingTasks(true);
@@ -77,20 +78,49 @@ function App() {
     await loadTasks();
   }
 
-  function handleTaskStatusChange(taskId, status) {
+  async function updateTask(taskId, updates) {
+    const currentTask = tasks.find((task) => task.id === taskId);
+    if (!currentTask) return;
+
+    const updatedTask = { ...currentTask, ...updates };
     setTasks((currentTasks) =>
-      currentTasks.map((task) =>
-        task.id === taskId ? { ...task, status } : task,
-      ),
+      currentTasks.map((task) => (task.id === taskId ? updatedTask : task)),
     );
+    setTaskUpdateErrors((currentErrors) => ({
+      ...currentErrors,
+      [taskId]: "",
+    }));
+
+    try {
+      const response = await fetch(`${TASKS_ENDPOINT}/${taskId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: updatedTask.title,
+          status: updatedTask.status,
+          deadline: updatedTask.deadline,
+        }),
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || `HTTP ${response.status}`);
+      }
+    } catch (error) {
+      setTaskUpdateErrors((currentErrors) => ({
+        ...currentErrors,
+        [taskId]: `Užduoties atnaujinti nepavyko: ${error.message}`,
+      }));
+      await loadTasks();
+    }
+  }
+
+  function handleTaskStatusChange(taskId, status) {
+    updateTask(taskId, { status });
   }
 
   function handleTaskDeadlineChange(taskId, deadline) {
-    setTasks((currentTasks) =>
-      currentTasks.map((task) =>
-        task.id === taskId ? { ...task, deadline } : task,
-      ),
-    );
+    updateTask(taskId, { deadline });
   }
 
   const today = new Date();
@@ -185,6 +215,7 @@ function App() {
                   loading={isLoadingTasks}
                   onStatusChange={handleTaskStatusChange}
                   onDeadlineChange={handleTaskDeadlineChange}
+                  updateErrors={taskUpdateErrors}
                 />
 
                 {tasksError && (

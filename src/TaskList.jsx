@@ -1,6 +1,12 @@
 import "./TaskList.css";
 
-function TaskList({ tasks = [], loading = false, onStatusChange, onDeadlineChange }) {
+function TaskList({
+  tasks = [],
+  loading = false,
+  onStatusChange,
+  onDeadlineChange,
+  updateErrors = {},
+}) {
   if (loading) {
     return (
       <section className="task-card">
@@ -60,6 +66,11 @@ function TaskList({ tasks = [], loading = false, onStatusChange, onDeadlineChang
                 aria-label={`Keisti užduoties „${task.title}“ terminą`}
               />
             </label>
+            {updateErrors[task.id] && (
+              <p className="login-error" role="alert">
+                {updateErrors[task.id]}
+              </p>
+            )}
           </article>
         ))}
       </div>
