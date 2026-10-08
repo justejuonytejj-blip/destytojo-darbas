@@ -17,6 +17,9 @@ function AddAuthUserForm() {
   const [draftUsername, setDraftUsername] = useState("");
   const [isSavingUser, setIsSavingUser] = useState(false);
   const [updateError, setUpdateError] = useState("");
+  const [deletingId, setDeletingId] = useState(null);
+  const [deleteError, setDeleteError] = useState("");
+  const [deleteErrorId, setDeleteErrorId] = useState(null);
 
   async function loadAuthUsers() {
     setIsLoadingUsers(true);
@@ -163,6 +166,42 @@ function AddAuthUserForm() {
     }
   }
 
+  async function deleteUser(user) {
+    if (isSavingUser || deletingId !== null) return;
+
+    const confirmed = window.confirm(
+      `Ar tikrai norite ištrinti vartotoją „${user.username}“?`,
+    );
+    if (!confirmed) return;
+
+    setDeletingId(user.id);
+    setDeleteError("");
+    setDeleteErrorId(null);
+
+    try {
+      const response = await fetch(`${AUTH_ENDPOINT}/${user.id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        let result = {};
+        try {
+          result = await response.json();
+        } catch {
+          result = {};
+        }
+        throw new Error(result.message || `HTTP ${response.status}`);
+      }
+
+      await loadAuthUsers();
+    } catch (error) {
+      setDeleteError(`Vartotojo ištrinti nepavyko: ${error.message}`);
+      setDeleteErrorId(user.id);
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
   return (
     <div className="auth-user-panel">
       <div className="add-auth-user">
@@ -297,20 +336,30 @@ function AddAuthUserForm() {
                         </button>
                       </>
                     ) : (
-                      <button
-                        type="button"
-                        className="auth-user-list__edit"
-                        onClick={() => startEditing(user)}
-                        disabled={isSavingUser}
-                      >
-                        Redaguoti
-                      </button>
+                      <>
+                        <button
+                          type="button"
+                          className="auth-user-list__edit"
+                          onClick={() => startEditing(user)}
+                          disabled={isSavingUser || deletingId !== null}
+                        >
+                          Redaguoti
+                        </button>
+                        <button
+                          type="button"
+                          className="auth-user-list__delete"
+                          onClick={() => deleteUser(user)}
+                          disabled={isSavingUser || deletingId !== null}
+                        >
+                          {deletingId === user.id ? "Trinama..." : "Ištrinti"}
+                        </button>
+                      </>
                     )}
                   </div>
 
-                  {isEditing && updateError && (
+                  {((isEditing && updateError) || deleteErrorId === user.id) && (
                     <p className="add-auth-user__error" role="alert">
-                      {updateError}
+                      {deleteErrorId === user.id ? deleteError : updateError}
                     </p>
                   )}
                 </li>

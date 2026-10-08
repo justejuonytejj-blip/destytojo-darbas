@@ -191,7 +191,8 @@
 
 .auth-user-list__edit,
 .auth-user-list__cancel,
-.auth-user-list__save {
+.auth-user-list__save,
+.auth-user-list__delete {
   padding: 8px 12px;
   border-radius: 8px;
   font: inherit;
@@ -201,15 +202,25 @@
 }
 
 .auth-user-list__edit,
-.auth-user-list__cancel {
+.auth-user-list__cancel,
+.auth-user-list__delete {
   color: var(--text-h);
   background: var(--bg);
   border: 1px solid var(--border);
 }
 
+.auth-user-list__delete {
+  color: #dc2626;
+}
+
 .auth-user-list__edit:hover,
-.auth-user-list__cancel:hover {
+.auth-user-list__cancel:hover,
+.auth-user-list__delete:hover {
   border-color: var(--accent-border);
+}
+
+.auth-user-list__delete:hover {
+  border-color: #dc2626;
 }
 
 .auth-user-list__save {
@@ -224,14 +235,16 @@
 
 .auth-user-list__edit:disabled,
 .auth-user-list__cancel:disabled,
-.auth-user-list__save:disabled {
+.auth-user-list__save:disabled,
+.auth-user-list__delete:disabled {
   cursor: wait;
   filter: brightness(0.9);
 }
 
 .auth-user-list__edit:focus-visible,
 .auth-user-list__cancel:focus-visible,
-.auth-user-list__save:focus-visible {
+.auth-user-list__save:focus-visible,
+.auth-user-list__delete:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
