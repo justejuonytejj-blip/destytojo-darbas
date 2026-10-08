@@ -1,4 +1,8 @@
+import { useState } from "react";
 import "./TaskList.css";
+
+const TASKS_ENDPOINT =
+  "https://testapi.io/api/justejuonytejj-blip/resource/tasklist";
 
 function TaskList({
   tasks = [],
@@ -9,6 +13,45 @@ function TaskList({
   onDelete,
   deleteErrors = {},
 }) {
+  const [viewedTask, setViewedTask] = useState(null);
+  const [viewingId, setViewingId] = useState(null);
+  const [viewError, setViewError] = useState("");
+  const [viewErrorId, setViewErrorId] = useState(null);
+
+  async function viewTask(taskId) {
+    setViewingId(taskId);
+    setViewError("");
+    setViewErrorId(null);
+    setViewedTask(null);
+
+    try {
+      const response = await fetch(`${TASKS_ENDPOINT}/${taskId}`);
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || `HTTP ${response.status}`);
+      }
+
+      const record =
+        result && result.data && !Array.isArray(result.data) ? result.data : result;
+      if (!record || typeof record !== "object" || Array.isArray(record)) {
+        throw new Error("Gautas netinkamas užduoties įrašas.");
+      }
+
+      setViewedTask({
+        id: record.id ?? record._id,
+        title: record.title ?? "",
+        status: record.status ?? "",
+        deadline: record.deadline ?? "",
+      });
+    } catch (error) {
+      setViewError(`Užduoties gauti nepavyko: ${error.message}`);
+      setViewErrorId(taskId);
+    } finally {
+      setViewingId(null);
+    }
+  }
+
   if (loading) {
     return (
       <section className="task-card">
@@ -83,6 +126,43 @@ function TaskList({
                 aria-label={`Keisti užduoties „${task.title}“ terminą`}
               />
             </label>
+
+            <button
+              type="button"
+              className="task-view-button"
+              onClick={() => viewTask(task.id)}
+              disabled={viewingId === task.id}
+            >
+              {viewingId === task.id ? "Kraunama..." : "Peržiūrėti"}
+            </button>
+
+            {viewedTask?.id === task.id && (
+              <dl className="task-view">
+                <div>
+                  <dt>id</dt>
+                  <dd>{viewedTask.id}</dd>
+                </div>
+                <div>
+                  <dt>title</dt>
+                  <dd>{viewedTask.title}</dd>
+                </div>
+                <div>
+                  <dt>status</dt>
+                  <dd>{viewedTask.status}</dd>
+                </div>
+                <div>
+                  <dt>deadline</dt>
+                  <dd>{viewedTask.deadline}</dd>
+                </div>
+              </dl>
+            )}
+
+            {viewErrorId === task.id && viewError && (
+              <p className="login-error" role="alert">
+                {viewError}
+              </p>
+            )}
+
             {updateErrors[task.id] && (
               <p className="login-error" role="alert">
                 {updateErrors[task.id]}

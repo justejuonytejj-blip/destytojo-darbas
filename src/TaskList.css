@@ -157,6 +157,60 @@
   color: var(--text);
 }
 
+.task-view-button {
+  margin-top: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-h);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.task-view-button:hover {
+  border-color: var(--accent-border);
+}
+
+.task-view-button:disabled {
+  cursor: wait;
+}
+
+.task-view-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.task-view {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.task-view div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.task-view dt {
+  color: var(--text);
+  font-size: 13px;
+}
+
+.task-view dd {
+  margin: 0;
+  color: var(--text-h);
+  font-size: 14px;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
 @media (max-width: 1024px) {
   .task-card {
     padding: 28px 22px 24px;

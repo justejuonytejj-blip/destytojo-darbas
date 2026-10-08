@@ -246,29 +246,33 @@ function App() {
                   </p>
                 </section>
 
-                <TaskList
-                  tasks={tasks}
-                  loading={isLoadingTasks}
-                  onStatusChange={handleTaskStatusChange}
-                  onDeadlineChange={handleTaskDeadlineChange}
-                  updateErrors={taskUpdateErrors}
-                  onDelete={handleTaskDelete}
-                  deleteErrors={taskDeleteErrors}
-                />
-
-                {tasksError && (
-                  <p className="login-error" role="alert">
-                    {tasksError}
-                  </p>
-                )}
-
-                <AddTaskForm onAddTask={handleAddTask} />
-
                 <ProgressBar initialProgress={50} />
               </>
             )}
           </main>
         </>
+      )}
+
+      {activePage === "tasks" && (
+        <main className="login-page">
+          <TaskList
+            tasks={tasks}
+            loading={isLoadingTasks}
+            onStatusChange={handleTaskStatusChange}
+            onDeadlineChange={handleTaskDeadlineChange}
+            updateErrors={taskUpdateErrors}
+            onDelete={handleTaskDelete}
+            deleteErrors={taskDeleteErrors}
+          />
+
+          {tasksError && (
+            <p className="login-error" role="alert">
+              {tasksError}
+            </p>
+          )}
+
+          {isLoggedIn && <AddTaskForm onAddTask={handleAddTask} />}
+        </main>
       )}
 
       {activePage === "profile" && <Profile user={user} tasks={tasks} />}
