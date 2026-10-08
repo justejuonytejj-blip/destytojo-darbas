@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TaskList from "./TaskList";
 import ProgressBar from "./ProgressBar";
 import Navbar from "./Navbar";
 import AddTaskForm from "./AddTaskForm";
 import Profile from "./Profile";
 import "./App.css";
+
+const TASKS_ENDPOINT =
+  "https://testapi.io/api/justejuonytejj-blip/resource/tasklist";
 
 function App() {
   const user = {
@@ -17,21 +20,46 @@ function App() {
   const [password, setPassword] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginError, setLoginError] = useState("");
+  const [tasks, setTasks] = useState([]);
+  const [isLoadingTasks, setIsLoadingTasks] = useState(true);
+  const [tasksError, setTasksError] = useState("");
 
-  const [tasks, setTasks] = useState([
-    {
-      id: 1,
-      title: "Sukurti prisijungimo formą",
-      status: "Atlikta",
-      deadline: "2026-10-01",
-    },
-    {
-      id: 2,
-      title: "Sukurti užduočių sąrašą",
-      status: "Vykdoma",
-      deadline: "2026-10-05",
-    },
-  ]);
+  async function loadTasks() {
+    setIsLoadingTasks(true);
+    setTasksError("");
+
+    try {
+      const response = await fetch(TASKS_ENDPOINT);
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || `HTTP ${response.status}`);
+      }
+
+      const taskRecords = Array.isArray(result) ? result : result.data;
+      if (!Array.isArray(taskRecords)) {
+        throw new Error("Gautas netinkamas užduočių sąrašas.");
+      }
+
+      setTasks(
+        taskRecords.map((task) => ({
+          ...task,
+          id: task.id ?? task._id ?? `${task.title}-${task.deadline}`,
+          title: task.title ?? "",
+          status: task.status ?? "Nepradėta",
+          deadline: task.deadline ?? "",
+        })),
+      );
+    } catch (error) {
+      setTasksError(`Užduočių gauti nepavyko: ${error.message}`);
+    } finally {
+      setIsLoadingTasks(false);
+    }
+  }
+
+  useEffect(() => {
+    loadTasks();
+  }, []);
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -45,8 +73,8 @@ function App() {
     setLoginError("Neteisingas vartotojo vardas arba slaptažodis.");
   }
 
-  function handleAddTask(newTask) {
-    setTasks((currentTasks) => [...currentTasks, newTask]);
+  async function handleAddTask() {
+    await loadTasks();
   }
 
   function handleTaskStatusChange(taskId, status) {
@@ -154,10 +182,16 @@ function App() {
 
                 <TaskList
                   tasks={tasks}
-                  loading={false}
+                  loading={isLoadingTasks}
                   onStatusChange={handleTaskStatusChange}
                   onDeadlineChange={handleTaskDeadlineChange}
                 />
+
+                {tasksError && (
+                  <p className="login-error" role="alert">
+                    {tasksError}
+                  </p>
+                )}
 
                 <AddTaskForm onAddTask={handleAddTask} />
 
