@@ -1,3 +1,10 @@
+.auth-user-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: min(100%, 400px);
+}
+
 .add-auth-user {
   width: min(100%, 400px);
   padding: 36px 32px 32px;
@@ -116,6 +123,66 @@
   color: #dc2626;
 }
 
+.auth-user-list {
+  width: 100%;
+  padding: 36px 32px 32px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+  box-sizing: border-box;
+}
+
+.auth-user-list__header {
+  margin-bottom: 20px;
+}
+
+.auth-user-list__header h2 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  letter-spacing: -0.4px;
+  color: var(--text-h);
+}
+
+.auth-user-list__header p,
+.auth-user-list__state {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.auth-user-list__items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.auth-user-list__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-h);
+  font-size: 15px;
+}
+
+.auth-user-list__label {
+  margin-right: 8px;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.auth-user-list > .add-auth-user__error {
+  margin-bottom: 12px;
+}
+
 @media (max-width: 1024px) {
   .add-auth-user {
     padding: 28px 22px 24px;
@@ -123,5 +190,13 @@
 
   .add-auth-user__header h2 {
     font-size: 24px;
+  }
+
+  .auth-user-list {
+    padding: 28px 22px 24px;
+  }
+
+  .auth-user-list__header h2 {
+    font-size: 20px;
   }
 }
