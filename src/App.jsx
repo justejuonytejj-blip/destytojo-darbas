@@ -24,6 +24,7 @@ function App() {
   const [isLoadingTasks, setIsLoadingTasks] = useState(true);
   const [tasksError, setTasksError] = useState("");
   const [taskUpdateErrors, setTaskUpdateErrors] = useState({});
+  const [taskDeleteErrors, setTaskDeleteErrors] = useState({});
 
   async function loadTasks() {
     setIsLoadingTasks(true);
@@ -123,6 +124,38 @@ function App() {
     updateTask(taskId, { deadline });
   }
 
+  async function handleTaskDelete(taskId) {
+    setTaskDeleteErrors((currentErrors) => ({
+      ...currentErrors,
+      [taskId]: "",
+    }));
+
+    try {
+      const response = await fetch(`${TASKS_ENDPOINT}/${taskId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        let result = {};
+        try {
+          result = await response.json();
+        } catch {
+          // DELETE atsakymas gali neturėti JSON turinio.
+        }
+        throw new Error(result.message || `HTTP ${response.status}`);
+      }
+
+      setTasks((currentTasks) =>
+        currentTasks.filter((task) => task.id !== taskId),
+      );
+    } catch (error) {
+      setTaskDeleteErrors((currentErrors) => ({
+        ...currentErrors,
+        [taskId]: `Užduoties ištrinti nepavyko: ${error.message}`,
+      }));
+    }
+  }
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const completedTaskCount = tasks.filter(
@@ -216,6 +249,8 @@ function App() {
                   onStatusChange={handleTaskStatusChange}
                   onDeadlineChange={handleTaskDeadlineChange}
                   updateErrors={taskUpdateErrors}
+                  onDelete={handleTaskDelete}
+                  deleteErrors={taskDeleteErrors}
                 />
 
                 {tasksError && (

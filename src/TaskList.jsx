@@ -6,6 +6,8 @@ function TaskList({
   onStatusChange,
   onDeadlineChange,
   updateErrors = {},
+  onDelete,
+  deleteErrors = {},
 }) {
   if (loading) {
     return (
@@ -36,6 +38,7 @@ function TaskList({
             <div className="task-item__top">
               <h3>{task.title}</h3>
 
+              <div className="task-item__controls">
               <label className="task-status-field">
                 <span className="visually-hidden">Užduoties statusas</span>
                 <select
@@ -53,6 +56,20 @@ function TaskList({
                   <option value="Atlikta">Atlikta</option>
                 </select>
               </label>
+                <button
+                  type="button"
+                  className="task-delete-button"
+                  onClick={() => {
+                    if (window.confirm("Ar tikrai norite ištrinti šią užduotį?")) {
+                      onDelete?.(task.id);
+                    }
+                  }}
+                  aria-label={`Ištrinti užduotį „${task.title}“`}
+                  title="Ištrinti užduotį"
+                >
+                  🗑️
+                </button>
+              </div>
             </div>
 
             <label className="task-deadline">
@@ -69,6 +86,11 @@ function TaskList({
             {updateErrors[task.id] && (
               <p className="login-error" role="alert">
                 {updateErrors[task.id]}
+              </p>
+            )}
+            {deleteErrors[task.id] && (
+              <p className="login-error" role="alert">
+                {deleteErrors[task.id]}
               </p>
             )}
           </article>
