@@ -1,0 +1,127 @@
+.add-auth-user {
+  width: min(100%, 400px);
+  padding: 36px 32px 32px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.add-auth-user__header {
+  margin-bottom: 28px;
+}
+
+.add-auth-user__header h2 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  letter-spacing: -0.5px;
+  color: var(--text-h);
+}
+
+.add-auth-user__header p {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.add-auth-user__form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.add-auth-user__field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+.add-auth-user__field input {
+  font: inherit;
+  font-weight: 400;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text-h);
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.add-auth-user__field input::placeholder {
+  color: var(--text);
+  opacity: 0.65;
+}
+
+.add-auth-user__field input:hover {
+  border-color: var(--accent-border);
+}
+
+.add-auth-user__field input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+.add-auth-user__submit {
+  margin-top: 8px;
+  padding: 13px 20px;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    filter 0.2s,
+    transform 0.15s;
+}
+
+.add-auth-user__submit:hover {
+  filter: brightness(1.08);
+}
+
+.add-auth-user__submit:active {
+  transform: scale(0.98);
+}
+
+.add-auth-user__submit:disabled {
+  cursor: wait;
+  filter: brightness(0.9);
+}
+
+.add-auth-user__submit:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.add-auth-user__success {
+  margin: 0;
+  font-size: 14px;
+  color: #16a34a;
+}
+
+.add-auth-user__error {
+  margin: 0;
+  font-size: 14px;
+  color: #dc2626;
+}
+
+@media (max-width: 1024px) {
+  .add-auth-user {
+    padding: 28px 22px 24px;
+  }
+
+  .add-auth-user__header h2 {
+    font-size: 24px;
+  }
+}

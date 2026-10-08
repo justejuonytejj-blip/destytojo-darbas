@@ -3,6 +3,7 @@ import TaskList from "./TaskList";
 import ProgressBar from "./ProgressBar";
 import Navbar from "./Navbar";
 import AddTaskForm from "./AddTaskForm";
+import AddAuthUserForm from "./AddAuthUserForm";
 import Profile from "./Profile";
 import "./App.css";
 
@@ -230,6 +231,8 @@ function App() {
                 </>
               </div>
             )}
+
+            {!isLoggedIn && <AddAuthUserForm />}
 
             {isLoggedIn && (
               <>
