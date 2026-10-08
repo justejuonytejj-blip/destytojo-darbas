@@ -165,12 +165,117 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 12px;
   padding: 12px 14px;
   border: 1px solid var(--border);
   border-radius: 10px;
   color: var(--text-h);
   font-size: 15px;
+}
+
+.auth-user-list__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.auth-user-list__actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.auth-user-list__edit,
+.auth-user-list__cancel,
+.auth-user-list__save {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.auth-user-list__edit,
+.auth-user-list__cancel {
+  color: var(--text-h);
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+
+.auth-user-list__edit:hover,
+.auth-user-list__cancel:hover {
+  border-color: var(--accent-border);
+}
+
+.auth-user-list__save {
+  color: #fff;
+  background: var(--accent);
+  border: none;
+}
+
+.auth-user-list__save:hover {
+  filter: brightness(1.08);
+}
+
+.auth-user-list__edit:disabled,
+.auth-user-list__cancel:disabled,
+.auth-user-list__save:disabled {
+  cursor: wait;
+  filter: brightness(0.9);
+}
+
+.auth-user-list__edit:focus-visible,
+.auth-user-list__cancel:focus-visible,
+.auth-user-list__save:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.auth-user-list__item--editing {
+  align-items: stretch;
+}
+
+.auth-user-list__item--editing .auth-user-list__meta {
+  flex-direction: column;
+  align-items: stretch;
+  flex-basis: 100%;
+}
+
+.auth-user-list__item--editing .auth-user-list__actions {
+  margin-left: auto;
+}
+
+.auth-user-list__edit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.auth-user-list__edit-field input {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  font-weight: 400;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text-h);
+}
+
+.auth-user-list__edit-field input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+.auth-user-list__item .add-auth-user__error {
+  flex-basis: 100%;
 }
 
 .auth-user-list__label {

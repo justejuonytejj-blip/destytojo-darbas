@@ -13,6 +13,10 @@ function AddAuthUserForm() {
   const [users, setUsers] = useState([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(true);
   const [listError, setListError] = useState("");
+  const [editingId, setEditingId] = useState(null);
+  const [draftUsername, setDraftUsername] = useState("");
+  const [isSavingUser, setIsSavingUser] = useState(false);
+  const [updateError, setUpdateError] = useState("");
 
   async function loadAuthUsers() {
     setIsLoadingUsers(true);
@@ -83,6 +87,79 @@ function AddAuthUserForm() {
       setErrorMessage(`Vartotojo sukurti nepavyko: ${error.message}`);
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  function startEditing(user) {
+    if (isSavingUser) return;
+
+    setEditingId(user.id);
+    setDraftUsername(user.username);
+    setUpdateError("");
+  }
+
+  function cancelEditing() {
+    if (isSavingUser) return;
+
+    setEditingId(null);
+    setDraftUsername("");
+    setUpdateError("");
+  }
+
+  async function saveUsername(userId) {
+    const nextUsername = draftUsername.trim();
+    if (!nextUsername) {
+      setUpdateError("Įveskite username.");
+      return;
+    }
+
+    setIsSavingUser(true);
+    setUpdateError("");
+
+    try {
+      const currentResponse = await fetch(`${AUTH_ENDPOINT}/${userId}`);
+      let currentRecord = {};
+      try {
+        currentRecord = await currentResponse.json();
+      } catch {
+        currentRecord = {};
+      }
+
+      if (!currentResponse.ok) {
+        throw new Error(currentRecord.message || `HTTP ${currentResponse.status}`);
+      }
+
+      if (typeof currentRecord.password !== "string") {
+        throw new Error("Nepavyko išsaugoti esamų duomenų.");
+      }
+
+      const response = await fetch(`${AUTH_ENDPOINT}/${userId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: nextUsername,
+          password: currentRecord.password,
+        }),
+      });
+
+      let result = {};
+      try {
+        result = await response.json();
+      } catch {
+        result = {};
+      }
+
+      if (!response.ok) {
+        throw new Error(result.message || `HTTP ${response.status}`);
+      }
+
+      setEditingId(null);
+      setDraftUsername("");
+      await loadAuthUsers();
+    } catch (error) {
+      setUpdateError(`Vartotojo atnaujinti nepavyko: ${error.message}`);
+    } finally {
+      setIsSavingUser(false);
     }
   }
 
@@ -165,18 +242,80 @@ function AddAuthUserForm() {
 
         {users.length > 0 && (
           <ul className="auth-user-list__items">
-            {users.map((user) => (
-              <li className="auth-user-list__item" key={user.id}>
-                <span>
-                  <span className="auth-user-list__label">id</span>
-                  {user.id}
-                </span>
-                <span>
-                  <span className="auth-user-list__label">username</span>
-                  {user.username}
-                </span>
-              </li>
-            ))}
+            {users.map((user) => {
+              const isEditing = editingId === user.id;
+
+              return (
+                <li
+                  className={`auth-user-list__item${
+                    isEditing ? " auth-user-list__item--editing" : ""
+                  }`}
+                  key={user.id}
+                >
+                  <div className="auth-user-list__meta">
+                    <span>
+                      <span className="auth-user-list__label">id</span>
+                      {user.id}
+                    </span>
+                    {isEditing ? (
+                      <label className="auth-user-list__edit-field">
+                        <span className="auth-user-list__label">username</span>
+                        <input
+                          type="text"
+                          value={draftUsername}
+                          onChange={(event) => setDraftUsername(event.target.value)}
+                          autoComplete="off"
+                          required
+                        />
+                      </label>
+                    ) : (
+                      <span>
+                        <span className="auth-user-list__label">username</span>
+                        {user.username}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="auth-user-list__actions">
+                    {isEditing ? (
+                      <>
+                        <button
+                          type="button"
+                          className="auth-user-list__save"
+                          onClick={() => saveUsername(user.id)}
+                          disabled={isSavingUser}
+                        >
+                          {isSavingUser ? "Saugoma..." : "Išsaugoti"}
+                        </button>
+                        <button
+                          type="button"
+                          className="auth-user-list__cancel"
+                          onClick={cancelEditing}
+                          disabled={isSavingUser}
+                        >
+                          Atšaukti
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        type="button"
+                        className="auth-user-list__edit"
+                        onClick={() => startEditing(user)}
+                        disabled={isSavingUser}
+                      >
+                        Redaguoti
+                      </button>
+                    )}
+                  </div>
+
+                  {isEditing && updateError && (
+                    <p className="add-auth-user__error" role="alert">
+                      {updateError}
+                    </p>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>
